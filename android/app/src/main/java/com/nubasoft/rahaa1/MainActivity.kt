@@ -1,4 +1,4 @@
-package com.rahaa_app
+package com.nubasoft.rahaa1
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

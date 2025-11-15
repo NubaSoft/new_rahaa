@@ -1,4 +1,4 @@
-package com.rahaa_app
+package com.nubasoft.rahaa1
 
 import android.app.Application
 import com.facebook.react.PackageList

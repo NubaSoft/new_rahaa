@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "375849000446",
+    "project_id": "mswy-dayt",
+    "storage_bucket": "mswy-dayt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375849000446:android:3cd4506c17f31e0b54b4af",
+        "android_client_info": {
+          "package_name": "com.nubasoft.rahaa1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2qR0Q1_tZ1S6wYYvVBoszN5bbOFkFeP4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

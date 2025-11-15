@@ -1,0 +1,107 @@
+import { I18nManager, StyleSheet } from "react-native"
+
+export const textAlign = () => {
+  return I18nManager.isRTL ? "right" : "left"
+}
+
+export const globalStyle = StyleSheet.create({
+  alignEvenlyInRow: {
+    alignItems: "center",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+  },
+  colCenterAlignStar: {
+    alignItems: "flex-start",
+    flexDirection: "column",
+    justifyContent: "center",
+  },
+  columnCenter: {
+    alignItems: "center",
+    flexDirection: "column",
+    justifyContent: "center",
+  },
+  columnEndAlignCenter: {
+    alignItems: "center",
+    flexDirection: "column",
+    justifyContent: "flex-end",
+  },
+  columnStart: {
+    alignItems: "center",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+  },
+  rowAlignBetweenBaseline: {
+    alignItems: "baseline",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  rowAlignBetweenStretch: {
+    alignItems: "stretch",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  rowAlignEnd: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+  rowAlignEndBaseline: {
+    alignItems: "baseline",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+  rowAlignTop: {
+    alignItems: "flex-start",
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+
+  rowAround: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  rowBetween: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  rowCenter: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  rowStart: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
+  rowStartAlignEnd: {
+    alignItems: "flex-end",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
+  rowStartAlignStart: {
+    alignItems: "flex-start",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
+  rowStartAlignStrech: {
+    alignItems: "stretch",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
+  rowStartBaseline: {
+    alignItems: "baseline",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
+
+  textAlignLeft: {
+    textAlign: "left",
+  },
+  flexOne: {
+    flex: 1,
+  },
+})
