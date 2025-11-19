@@ -83,8 +83,8 @@ android {
         applicationId "com.nubasoft.rahaa1"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 21
+        versionName "1.2.1"
     }
     signingConfigs {
         debug {
@@ -93,17 +93,18 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('my-release-key.jks')
+            storePassword '6089d6a4d49a61472436705d21e6e509'
+            keyAlias 'b7b00273acd0e8196fee587ab820bdb1'
+            keyPassword '07f6ed80c99f740063ee2300e5e13489'
+        }
     }
     buildTypes {
-        debug {
-            signingConfig signingConfigs.debug
-        }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            shrinkResources enableProguardInReleaseBuilds
         }
     }
 }
