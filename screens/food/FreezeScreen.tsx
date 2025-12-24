@@ -58,22 +58,22 @@ const Freeze = ({ handler, setIsLoading, FreezeBackHandler }) => {
       })
   }
   const onChangeDate = date => {
-    const indx = pausedDays.indexOf(date.format("YYYY-MM-DD"))
+    const indx = pausedDays.indexOf(moment(date).format("YYYY-MM-DD"))
     let pausedD = pausedDays
     if (indx === -1) {
-      pausedD.push(date.format("YYYY-MM-DD"))
+      pausedD.push(moment(date).format("YYYY-MM-DD"))
     } else {
-      unPause(date.format("YYYY-MM-DD"))
+      unPause(moment(date).format("YYYY-MM-DD"))
       pausedD = pausedD.filter(function (value) {
-        return value !== date.format("YYYY-MM-DD")
+        return value !== moment(date).format("YYYY-MM-DD")
       })
     }
     setPausedDays(pausedD)
     setPausedDayslength(pausedD.length)
   }
   const customDatesStylesCallback = date => {
-    const indx = subscriptionDays.indexOf(date.format("YYYY-MM-DD"))
-    const pausindx = pausedDays.indexOf(date.format("YYYY-MM-DD"))
+    const indx = subscriptionDays.indexOf(moment(date).format("YYYY-MM-DD"))
+    const pausindx = pausedDays.indexOf(moment(date).format("YYYY-MM-DD"))
     if (pausindx !== -1) {
       return {
         style: {
@@ -188,7 +188,7 @@ const Freeze = ({ handler, setIsLoading, FreezeBackHandler }) => {
             previousTitleStyle={styles.previousTitleStyle}
             textStyle={styles.textStyle}
             disabledDates={date => {
-              if (subscriptionDays.includes(date.format("YYYY-MM-DD"))) {
+              if (subscriptionDays.includes(moment(date).format("YYYY-MM-DD"))) {
                 return false
               } else {
                 return true

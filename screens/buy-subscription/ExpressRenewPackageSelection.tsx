@@ -87,7 +87,7 @@ const FastRenewPackageSelection = ({
 
   const onChangeSEDate = (date, type) => {
     onChangeStartD(date)
-    onChangeEndD(moment(date.format("DD-MM-YYYY"), "DD-MM-YYYY").add(valueDays, "days"))
+    onChangeEndD(moment(moment(date).format("DD-MM-YYYY"), "DD-MM-YYYY").add(valueDays, "days"))
     if (date != null) {
       setDisableDaysPicker(false)
     }
@@ -140,7 +140,7 @@ const FastRenewPackageSelection = ({
             previousTitleStyle={styles.previousTitleStyle}
             textStyle={styles.textStyle}
             disabledDates={date => {
-              if (subscriptionStartDates.includes(date.format("YYYY-MM-DD"))) {
+              if (subscriptionStartDates.includes(moment(date).format("YYYY-MM-DD"))) {
                 return false
               } else {
                 return true
@@ -154,7 +154,7 @@ const FastRenewPackageSelection = ({
         style={styles.button}
         onPress={() => {
           if (startD) {
-            handler(ValueMeal, value, subdays, startD.format("YYYY-MM-DD"), menuID, price)
+            handler(ValueMeal, value, subdays, moment(startD).format("YYYY-MM-DD"), menuID, price)
           } else {
             Alert.alert("Please select your subscription start date")
           }

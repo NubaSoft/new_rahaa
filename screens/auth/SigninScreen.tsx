@@ -89,11 +89,10 @@ const Login = () => {
   const login = async () => {
     const fcmtoken = JSON.parse(await AsyncStorage.getItem("fcmtoken"))
     console.log("fcmtoken--fcmtoken----------", fcmtoken)
-
-    // AsyncStorage.setItem("data", "")
-    // AsyncStorage.setItem("keepLoggedIn", "")
-    // AsyncStorage.setItem("data", "")
-    // console.log("response----------")
+    if (password == null || password.length < 4) {
+      Alert.alert(lang[lang.lang].passwordMustGreaterThan8Characters)
+      setIsLoading(false)
+    } else {
     axios
       .post(config.baseURL + "/api/auth/login", {
         mobileNumber: mobilephone,
@@ -122,6 +121,7 @@ const Login = () => {
         Alert.alert("Login Failed", "Please check login data and try again!")
         setIsLoading(false)
       })
+    }
   }
 
   const checkUserExistance_forgot = () => {
@@ -163,7 +163,7 @@ const Login = () => {
     if (password !== confirmPassword) {
       Alert.alert(lang[lang.lang].didntMatchTryAgain)
       setIsLoading(false)
-    } else if (password == null || password.length < 9) {
+    } else if (password == null || password.length < 4) {
       Alert.alert(lang[lang.lang].passwordMustGreaterThan8Characters)
       setIsLoading(false)
     } else {
@@ -232,8 +232,8 @@ const Login = () => {
     if (password !== confirmPassword) {
       Alert.alert("Password didn't match, Please try again!")
       setIsLoading(false)
-    } else if (password == null || password.length < 9) {
-      Alert.alert("Password must be greater than 8 characters!")
+    } else if (password == null || password.length < 4) {
+      Alert.alert("Password must be greater than 4 characters!")
       setIsLoading(false)
     } else {
       axios

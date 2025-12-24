@@ -8,8 +8,18 @@ require Pod::Executable.execute_command('node', ['-p',
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
-# ✅ هذا هو الصحيح لبيئة React Native + Firebase
+# Firebase related modular headers
+  pod 'Firebase/Core'
+  pod 'FirebaseCoreInternal', :modular_headers => true
+  pod 'GoogleUtilities', :modular_headers => true
+
+  use_frameworks! :linkage => :static
+  $RNFirebaseAsStaticFramework = true
+# مهم: لا تحذف هذا
 use_modular_headers!
+
+# مهم جداً في RN 0.81 + Hermes + iOS 18 SDK
+use_frameworks! :linkage => :static
 
 # ❌ احذفه تماماً - وجوده أصلاً يُسبب مشاكل Darwin SDK
 # linkage = ENV['USE_FRAMEWORKS']

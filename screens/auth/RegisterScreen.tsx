@@ -125,8 +125,8 @@ const Register = ({}) => {
     if (password !== confirmPassword) {
       Alert.alert("Password didn't match, Please try again!")
       setIsLoading(false)
-    } else if (password == null || password.length < 9) {
-      Alert.alert("Password must be greater than 8 characters!")
+    } else if (password == null || password.length < 4) {
+      Alert.alert("Password must be greater than 4 characters!")
       setIsLoading(false)
     } else if (!isSelected) {
       Alert.alert("Please agree on the terms and conditions!")

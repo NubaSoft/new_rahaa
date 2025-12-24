@@ -114,14 +114,14 @@ const Welcome = ({ handler, setIsLoading }) => {
             </TouchableOpacity>
           </View>
         </View> */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.buttonStyle}
           onPress={() => {
             navigation.navigate("BrowseMenu")
           }}>
           <Text preset="button02" color={colors.white} text={lang[lang.lang].welcome_browse_menu} />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </TouchableOpacity> */}
+        {/* <TouchableOpacity
           style={styles.buttonStyle}
           onPress={() => {
             navigation.navigate("BrowsePackages")
@@ -131,7 +131,7 @@ const Welcome = ({ handler, setIsLoading }) => {
             color={colors.white}
             text={lang[lang.lang].welcome_browse_packages}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity
           style={styles.buttonStyle}
           onPress={() => navigation.navigate("SigninScreen")}>

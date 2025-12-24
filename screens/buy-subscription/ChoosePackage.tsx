@@ -166,7 +166,7 @@ const PackageSelection = ({ handler, offdays, fromwhere, onBackPress }) => {
               previousTitleStyle={styles.previousTitleStyle}
               textStyle={styles.textStyle}
               disabledDates={date => {
-                if (subscriptionStartDates.includes(date.format("YYYY-MM-DD"))) {
+                if (subscriptionStartDates.includes(moment(date).format("YYYY-MM-DD"))) {
                   return false
                 } else {
                   return true
@@ -181,7 +181,7 @@ const PackageSelection = ({ handler, offdays, fromwhere, onBackPress }) => {
             onPress={() => {
               if (startD) {
                 // TODO: remove zero constants
-                handler(0, 0, 0, startD.format("YYYY-MM-DD"))
+                handler(0, 0, 0, moment(startD).format("YYYY-MM-DD"))
               } else {
                 Alert.alert(lang[lang.lang].package_selection_alert_10)
               }

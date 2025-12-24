@@ -30,11 +30,18 @@ import HowItWorks from "./screens/onboarding/HowItWorks"
 import Address from "./screens/onboarding/Address"
 import { Alert } from "react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import {messaging} from "./firebase"
+import messaging from '@react-native-firebase/messaging';
+
+// import { firebase } from '@react-native-firebase/app';
 
 const Stack = createStackNavigator()
 
 export default function App() {
+
+
+// useEffect(() => {
+//   console.log('Firebase apps:', firebase.apps);
+// }, []);
 
   useEffect(() => {
   const requestUserPermission = async () => {

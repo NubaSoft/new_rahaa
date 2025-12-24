@@ -56,12 +56,7 @@ const CalendarView = ({
     }, []),
   )
   const customDatesStylesCallback = date => {
-    console.log(
-      'subscriptionDays.indexOf(date.format("YYYY-MM-DD"))------',
-      subscriptionDays.indexOf(date.format("YYYY-MM-DD")),
-    )
-
-    const indx = subscriptionDays.indexOf(date.format("YYYY-MM-DD"))
+    const indx = subscriptionDays.indexOf(moment(date).format("YYYY-MM-DD"))
     const statusCode = subscriptionDaysStatus[indx]
     console.log("statusCode----------", subscriptionDaysStatus[indx])
     switch (statusCode) {
@@ -182,7 +177,7 @@ const CalendarView = ({
 
   const selectedDateChanged = (selDate: any) => {
     console.log("subscriptionDaycan_be_modifieds-------", subscriptionDaycan_be_modifieds)
-    const indx = subscriptionDays.indexOf(selDate.format("YYYY-MM-DD"))
+    const indx = subscriptionDays.indexOf(moment(selDate).format("YYYY-MM-DD"))
     const statusCode = subscriptionDaysStatus[indx]
     const weekId = subscriptionWeekIds[indx]
     const dayId = subscriptionDayIds[indx]
@@ -201,8 +196,8 @@ const CalendarView = ({
       } else if (statusCode === 3) {
         Alert.alert(lang[lang.lang].calendar_alert_9)
         handler(
-          selDate.format("dddd, DD/MM"),
-          selDate.format("YYYY-MM-DD"),
+          moment(selDate).format("dddd, DD/MM"),
+          moment(selDate).format("YYYY-MM-DD"),
           weekId,
           dayId,
           centerId,
@@ -212,8 +207,8 @@ const CalendarView = ({
         )
       } else {
         handler(
-          selDate.format("dddd, DD/MM"),
-          selDate.format("YYYY-MM-DD"),
+          moment(selDate).format("dddd, DD/MM"),
+          moment(selDate).format("YYYY-MM-DD"),
           weekId,
           dayId,
           centerId,
@@ -310,7 +305,7 @@ const CalendarView = ({
               previousTitleStyle={styles.previousTitleStyle}
               textStyle={styles.textStyle}
               disabledDates={date => {
-                if (subscriptionDays.includes(date.format("YYYY-MM-DD"))) {
+                if (subscriptionDays.includes(moment(date).format("YYYY-MM-DD"))) {
                   return false
                 } else {
                   return true
