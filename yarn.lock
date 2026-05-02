@@ -4779,10 +4779,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:2.29.3":
-  version: 2.29.3
-  resolution: "date-fns@npm:2.29.3"
-  checksum: 10c0/aa9128c876ef69a05988029d6aa3d7e5c47a1e978f18b77b48126683d1a2e6605a16c3f5293ca9f4ca790d0755b5061fcea5b469f097871cd53f6590a5c1adc4
+"date-fns@npm:1.30.1":
+  version: 1.30.1
+  resolution: "date-fns@npm:1.30.1"
+  checksum: 10c0/bad6ad7c15180121e15d61ad62a4a214c108d66f35b35f5eeb6ade837a3c29aa4444b9528a93a5374b95ba11231c142276351bf52f4d168676f9a1e17ce3726a
   languageName: node
   linkType: hard
 
@@ -8759,7 +8759,7 @@ __metadata:
     "@types/react-native-calendar-picker": "npm:^8"
     "@types/react-test-renderer": "npm:^19.1.0"
     axios: "npm:^1.13.2"
-    date-fns: "npm:2.29.3"
+    date-fns: "npm:1.30.1"
     eslint: "npm:^8.19.0"
     jest: "npm:^29.6.3"
     moment: "npm:^2.30.1"
