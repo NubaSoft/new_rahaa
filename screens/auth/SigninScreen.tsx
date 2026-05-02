@@ -29,8 +29,8 @@ const crossFatLogo = require("../../assets/images/cross-fat.png")
 
 const Login = () => {
   const navigation = useNavigation<any>()
-  const [mobilephone, onChangeMobilePhone] = useState("")
-  const [password, onChangePassword] = useState("")
+  const [mobilephone, onChangeMobilePhone] = useState<string>("")
+  const [password, onChangePassword] = useState<string>("")
   const [ResetPasswordFlag, setResetPasswordFlag] = useState(false)
   const [confirmPassword, onChangeConfirmPassword] = useState("")
   const [otpNumber, setOtpNumber] = useState("")
@@ -44,10 +44,33 @@ const Login = () => {
   //Animation
   const transAnim = useRef(new Animated.Value(0)).current //Initial value for translation is 0
 
+  const [fcmToken, setFcmToken] = useState<string>('');
+
+  const getFcmTokin = async() => {
+    const token: string | any = await AsyncStorage.getItem('fcmtoken');
+    setFcmToken(token)
+  }
+
   useEffect(() => {
+    getFcmTokin()
+  }, [])
+
+  const setData = async () => {
+    const login_phone: string = await AsyncStorage.getItem("login_phone");
+    const login_password: string = await AsyncStorage.getItem("login_password");
+    console.log('===|||||||||====>>>>>>>>>>', login_phone, login_password);
+    onChangePassword(login_password);
+    onChangeMobilePhone(login_phone);
+    
+  } 
+  useEffect(() => {
+    setData();
     setIsLoading(false)
     Keyboard.dismiss()
   }, [])
+  useEffect(() => {
+    
+  })
   //Actions
 
   const checkUserExistance = mobilephone => {
@@ -87,8 +110,9 @@ const Login = () => {
   }
 
   const login = async () => {
-    const fcmtoken = JSON.parse(await AsyncStorage.getItem("fcmtoken"))
-    console.log("fcmtoken--fcmtoken----------", fcmtoken)
+    // const fcmtokenString = await AsyncStorage.getItem("fcmtoken")
+    // const fcmtoken = fcmtokenString ? JSON.parse(fcmtokenString) : ''
+    // console.log("fcmtoken--fcmtoken----------", fcmtoken)
     if (password == null || password.length < 4) {
       Alert.alert(lang[lang.lang].passwordMustGreaterThan8Characters)
       setIsLoading(false)
@@ -96,7 +120,7 @@ const Login = () => {
     axios
       .post(config.baseURL + "/api/auth/login", {
         mobileNumber: mobilephone,
-        fcmtoken,
+        // fcmtoken,
         password,
         deviceId: "ID",
         deviceOsType: DeviceInfo.getSystemName(),
@@ -105,10 +129,12 @@ const Login = () => {
         appVersion: "1.0.0",
         language: "en",
         platform: DeviceInfo.getSystemName(),
-        pushNotificationToken: "PUSH_NOTIFICATION_TOKEN1",
+        pushNotificationToken: fcmToken,
       })
       .then(function (response) {
-        console.log("response-------login----------", response)
+        console.log("response-------login---->>>------", response)
+        AsyncStorage.setItem("login_phone", mobilephone)
+        AsyncStorage.setItem("login_password", password)
         config.Token = response.data.accessToken
         config.profile = response.data
         AsyncStorage.setItem("keepLoggedIn", JSON.stringify(true))
@@ -351,6 +377,7 @@ const Login = () => {
             <TextField
               label={lang[lang.lang].login_12}
               placeholder={lang[lang.lang].login_12}
+              value={mobilephone}
               keyboardType="number-pad"
               onChangeText={onChangeMobilePhone}
               textAlign={lang.lang === "ar" ? "right" : "left"}

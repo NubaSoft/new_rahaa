@@ -305,6 +305,8 @@ export const lang = {
     tryAgainLater: "Please try again later",
     error: "Error",
     done: "Done",
+    youCanSelectOnly: 'You can select only ',
+    onlyMeals: 'meals'
   },
   ar: {
     welcome_1: "صحي",
@@ -609,5 +611,7 @@ export const lang = {
     tryAgainLater: "الرجاء المحاولة مرة أخرى في وقت لاحق",
     error: "خطأ",
     done: "تم",
+    youCanSelectOnly: 'تستطيع اختيار ',
+    onlyMeals: ' وجبات فقط'
   },
 }

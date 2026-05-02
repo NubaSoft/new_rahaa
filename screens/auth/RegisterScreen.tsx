@@ -3,7 +3,7 @@ import AntDesign from "react-native-vector-icons/AntDesign"
 import axios from "axios"
 import CheckBox from '@react-native-community/checkbox';
 import DeviceInfo from 'react-native-device-info';
-import React, { useMemo, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import {
   Alert,
   Animated,
@@ -27,6 +27,7 @@ import { config } from "../../config"
 import { lang } from "../../lang"
 import { useNavigation } from "@react-navigation/native"
 import Loading from "../loading/loading"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
 Keyboard.dismiss()
 const windowWidth = Dimensions.get("window").width
@@ -72,6 +73,17 @@ const Register = ({}) => {
       return 2
     }
   }
+
+  const [fcmToken, setFcmToken] = useState<string>('');
+
+  const getFcmTokin = async() => {
+    const token: string | any = await AsyncStorage.getItem('fcmtoken');
+    setFcmToken(token)
+  }
+
+  useEffect(() => {
+    getFcmTokin()
+  }, [])
 
   const checkUserExistance = () => {
     axios
@@ -153,7 +165,7 @@ const Register = ({}) => {
           deviceOsVersion: DeviceInfo.getSystemVersion(),
           deviceModel: DeviceInfo.getModel(),
           appVersion: "1.0.0",
-          pushNotificationToken: "PUSH_NOTIFICATION_TOKEN1",
+          pushNotificationToken: fcmToken,
         },
         addressDetails: {
           area: null,

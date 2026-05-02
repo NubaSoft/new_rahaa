@@ -36,7 +36,7 @@ const AddMeals = ({
   can_be_modified,
   status,
 }) => {
-  console.log("meals======>>>>>>>", meals[0]?.category[0].mealListItems)
+  console.log("meals======>>>>>>>", meals)
 
   // {
   //   "category": [
@@ -210,236 +210,148 @@ const AddMeals = ({
     onCalc()
   }, [selectedCat, snackType])
 
+  console.log('selectedMeals->>>>>>>>>>>', selectedMeals);
+  
   useEffect(() => {
-    const selMeals = {}
-    for (const idx in meals) {
-      for (const catIdx in meals[idx]["category"]) {
-        for (const mealIdx in meals[idx]["category"][catIdx]["mealListItems"]) {
-          const meal = meals[idx]["category"][catIdx]["mealListItems"][mealIdx]
-          if (meal["mealSelected"]) {
-            selMeals[meals[idx].categoryId] = meal["id"]
+  const selMeals = {}
+
+  for (const idx in meals) {
+    for (const catIdx in meals[idx]["category"]) {
+      const categoryId = meals[idx].categoryId
+
+      for (const mealIdx in meals[idx]["category"][catIdx]["mealListItems"]) {
+        const meal = meals[idx]["category"][catIdx]["mealListItems"][mealIdx]
+
+        if (meal["mealSelected"]) {
+          // لو مش موجود array اعمله initialize
+          if (!selMeals[categoryId]) {
+            selMeals[categoryId] = []
           }
+
+          // ضيف الوجبة في الأراي
+          selMeals[categoryId].push(meal["id"])
         }
       }
     }
-    setSelectedMeal(selMeals["1"])
-    setSelectedMeals(selMeals)
-    onCalc()
-  }, [meals])
+  }
+
+  setSelectedMeal(selMeals["1"] || [])
+  setSelectedMeals(selMeals)
+  onCalc()
+}, [meals])
 
   useEffect(() => {
     onCalc()
   }, [selectedMeals, selectedMeal])
 
   const onCalc = () => {
-    console.log("savedMeals------useEffect------>>>>>>")
-    const alertTitle = "Please complete your meals first \n"
-    let alertMessage = ""
-    let error = false
-    const savedMeals = []
-    let calories = 0
-    let fats = 0
-    let proteins = 0
-    let carbs = 0
+  let calories = 0
+  let fats = 0
+  let proteins = 0
+  let carbs = 0
 
-    if (Object.keys(selectedMeals).length === 0) {
-      error = true
-    } else {
-      console.log("---meals----------------", selectedMeals)
-      for (let i = 0; i < meals.length; i++) {
-        if (meals[i].categoryId in selectedMeals && selectedMeals[meals[i].categoryId] !== -1) {
-          const mealsList = []
+  for (let i = 0; i < meals.length; i++) {
+    const categoryId = meals[i].categoryId
+    const selectedIds = selectedMeals[categoryId] || []
 
-          for (let k = 0; k < meals[i]["category"].length; k++) {
-            for (let c = 0; c < meals[i]["category"][k]["mealListItems"].length; c++) {
-              mealsList.push(meals[i]["category"][k]["mealListItems"][c])
-            }
-          }
+    const mealsList = []
 
-          for (let j = 0; j < mealsList.length; j++) {
-            if (mealsList[j]["id"] === selectedMeals[meals[i].categoryId]) {
-              var savedMeal = {
-                calories: mealsList[j]["calories"],
-                fats: mealsList[j]["fats"],
-                proteins: mealsList[j]["proteins"],
-                carbs: mealsList[j]["carbs"],
-              }
-              calories = calories + mealsList[j]["calories"]
-              fats = fats + mealsList[j]["fats"]
-              proteins = proteins + mealsList[j]["proteins"]
-              carbs = carbs + mealsList[j]["carbs"]
-              setCalories(calories)
-              setFats(fats)
-              setProteins(proteins)
-              setCarbs(carbs)
-              break
-            }
-          }
-          savedMeals.push(savedMeal)
-          console.log("savedMeals------useEffect------", savedMeals)
-        } else {
-          alertMessage = alertMessage + "Select " + meals[i].titleEn + "\n"
-          error = true
-        }
+    for (let k = 0; k < meals[i].category.length; k++) {
+      for (let c = 0; c < meals[i].category[k].mealListItems.length; c++) {
+        mealsList.push(meals[i].category[k].mealListItems[c])
+      }
+    }
+
+    for (let j = 0; j < mealsList.length; j++) {
+      if (selectedIds.includes(mealsList[j].id)) {
+        calories += mealsList[j].calories
+        fats += mealsList[j].fats
+        proteins += mealsList[j].proteins
+        carbs += mealsList[j].carbs
       }
     }
   }
+
+  setCalories(calories)
+  setFats(fats)
+  setProteins(proteins)
+  setCarbs(carbs)
+}
 
   const onSavePressHandle = () => {
-    const alertTitle = "Please complete your meals first \n"
-    let alertMessage = ""
-    let error = false
-    const savedMeals: any = []
-    const savedMealsForRequest: any = []
+  const savedMeals = []
+  const savedMealsForRequest = []
 
-    for (let r = 0; r < categoreas?.length; r++) {
-      const meals: any = categoreas[r]?.category[0]?.mealListItems
-      for (let m = 0; m < meals?.length; m++) {
-        if (meals[m].mealSelected) {
-          savedMeals.push({
-            ...meals[m],
-            ...{
-              categoryId: categoreas[r]?.categoryId,
-              snackTypeId: categoreas[r]?.category[0]?.snackTypeId,
-            },
-          })
-        }
+  for (let r = 0; r < categoreas.length; r++) {
+    const category = categoreas[r]
+    const categoryId = category.categoryId
+    const selectedIds = selectedMeals[categoryId] || []
+    const maxAllowed = (category?.duplicate || 0) + 1
+
+    if (selectedIds.length !== maxAllowed) {
+      Alert.alert(`Select ${maxAllowed} meals for ${category.titleEn}`)
+      return
+    }
+
+    const mealsList = category?.category[0]?.mealListItems
+
+    for (let m = 0; m < mealsList.length; m++) {
+      if (selectedIds.includes(mealsList[m].id)) {
+        savedMeals.push({
+          ...mealsList[m],
+          categoryId,
+          snackTypeId: category?.category[0]?.snackTypeId,
+        })
       }
     }
-    if (savedMeals.length != categoreas?.length) {
-      Alert.alert(alertTitle, alertMessage)
-    } else {
-      for (let s = 0; s < savedMeals?.length; s++) {
-        var savedMeal = {
-          centerId,
-          oid: parseInt(oId),
-          date: usedDate,
-          subMealId: parseInt(savedMeals[s].categoryId),
-          mealNameAr: savedMeals[s].titleAr,
-          mealNameEn: savedMeals[s].titleEn,
-          portionValue: savedMeals[s].portionValue,
-          snackType: savedMeals[s].snack_typ,
-          sid: parseInt(savedMeals[s].snackTypeId),
-          itemId: parseInt(savedMeals[s].itemId),
-          itemCode: savedMeals[s].itemCode,
-          weekId: parseInt(savedMeals[s].weekId),
-          dayId: parseInt(savedMeals[s].dayId),
-          menuId: parseInt(savedMeals[s].menuId),
-          mealId: parseInt(savedMeals[s].mealId),
-        }
-        savedMealsForRequest.push(savedMeal)
-      }
-      // send meals
-      setIsLoading(true)
-      axios
-        .post(
-          config.baseURL + "/api/meal/setMeals",
-          {
-            meals: savedMealsForRequest,
-          },
-          {
-            headers: {
-              Authorization: `bearer ${config.Token}`,
-            },
-          },
-        )
-        .then(response => {
-          console.log("savedMealsForRequest---------", response?.config?.data)
-          setIsLoading(false)
-          CalendarBackHandler()
-        })
-        .catch(e => {
-          console.log(e)
-          setIsLoading(false)
-        })
-    }
-    // {"meals":[
-    //   {"centerId":1,"oid":2,"date":"2024-12-18","subMealId":1,"mealNameAr":"اومليت بالسبانخ","mealNameEn":"spinach omlete","portionValue":1,"snackType":0,"sid":1,"itemId":1195,"itemCode":"1195","weekId":2,"dayId":5,"menuId":32,"mealId":1},
-    //   {"centerId":1,"oid":2,"date":"2024-12-18","subMealId":2,"mealNameAr":"بيف ايوورب ستيو بالكينوا","mealNameEn":"Beef eropean stew with qunuioa bowl","portionValue":1,"snackType":0,"sid":1,"itemId":2336,"itemCode":"2337","weekId":2,"dayId":5,"menuId":32,"mealId":2},
-    //   {"centerId":1,"oid":2,"date":"2024-12-18","subMealId":3,"mealNameAr":"شاورما لحم صحن","mealNameEn":"Meat Shawarma bowl","portionValue":1,"snackType":0,"sid":1,"itemId":1477,"itemCode":"1478","weekId":2,"dayId":5,"menuId":32,"mealId":3},
-    //   {"centerId":1,"oid":2,"date":"2024-12-18","subMealId":28,"mealNameAr":"حمص بالفلفل المدخن  .","mealNameEn":"Smoked pepper Hommus .","portionValue":1,"snackType":1,"sid":1,"itemId":2403,"itemCode":"2404","weekId":2,"dayId":5,"menuId":32,"mealId":27},
-    //   {"centerId":1,"oid":2,"date":"2024-12-18","subMealId":24,"mealNameAr":"حمص بالفلفل المدخن  .","mealNameEn":"Smoked pepper Hommus .","portionValue":1,"snackType":1,"sid":1,"itemId":2403,"itemCode":"2404","weekId":2,"dayId":5,"menuId":32,"mealId":28},
-    //   {"centerId":1,"oid":2,"date":"2024-12-18","subMealId":25,"mealNameAr":"حمص بالفلفل المدخن  .","mealNameEn":"Smoked pepper Hommus .","portionValue":1,"snackType":1,"sid":1,"itemId":2403,"itemCode":"2404","weekId":2,"dayId":5,"menuId":32,"mealId":29}]
-    // }
-    // [
-    //   {"centerId": 1, "date": "2024-12-18", "dayId": 5, "itemCode": "1195", "itemId": 1195, "mealId": 1, "mealNameAr": "اومليت بالسبانخ", "mealNameEn": "spinach omlete", "menuId": 32, "oid": 2, "portionValue": 1, "sid": 1, "snackType": 0, "subMealId": 1, "weekId": 2},
-    //   {"centerId": 1, "date": "2024-12-18", "dayId": 5, "itemCode": "2337", "itemId": 2336, "mealId": 2, "mealNameAr": "بيف ايوورب ستيو بالكينوا", "mealNameEn": "Beef eropean stew with qunuioa bowl", "menuId": 32, "oid": 2, "portionValue": 1, "sid": 1, "snackType": 0, "subMealId": 2, "weekId": 2},
-    //   {"centerId": 1, "date": "2024-12-18", "dayId": 5, "itemCode": "1478", "itemId": 1477, "mealId": 3, "mealNameAr": "شاورما لحم صحن", "mealNameEn": "Meat Shawarma bowl", "menuId": 32, "oid": 2, "portionValue": 1, "sid": 1, "snackType": 0, "subMealId": 3, "weekId": 2},
-    //   {"centerId": 1, "date": "2024-12-18", "dayId": 5, "itemCode": "2404", "itemId": 2403, "mealId": 27, "mealNameAr": "حمص بالفلفل المدخن  .", "mealNameEn": "Smoked pepper Hommus .", "menuId": 32, "oid": 2, "portionValue": 1, "sid": 1, "snackType": 1, "subMealId": 28, "weekId": 2},
-    //   {"centerId": 1, "date": "2024-12-18", "dayId": 5, "itemCode": "2404", "itemId": 2403, "mealId": 28, "mealNameAr": "حمص بالفلفل المدخن  .", "mealNameEn": "Smoked pepper Hommus .", "menuId": 32, "oid": 2, "portionValue": 1, "sid": 1, "snackType": 1, "subMealId": 24, "weekId": 2},
-    //   {"centerId": 1, "date": "2024-12-18", "dayId": 5, "itemCode": "2404", "itemId": 2403, "mealId": 29, "mealNameAr": "حمص بالفلفل المدخن  .", "mealNameEn": "Smoked pepper Hommus .", "menuId": 32, "oid": 2, "portionValue": 1, "sid": 1, "snackType": 1, "subMealId": 25, "weekId": 2}
-    // ]
-    // if (Object.keys(selectedMeals).length === 0) {
-    //   error = true
-    // } else {
-    //   for (let i = 0; i < meals.length; i++) {
-    //     if (meals[i].categoryId in selectedMeals && selectedMeals[meals[i].categoryId] !== -1) {
-    //       const mealsList = []
-
-    //       for (let k = 0; k < meals[i]["category"].length; k++) {
-    //         for (let c = 0; c < meals[i]["category"][k]["mealListItems"].length; c++) {
-    //           mealsList.push(meals[i]["category"][k]["mealListItems"][c])
-    //         }
-    //       }
-
-    //       for (let j = 0; j < mealsList.length; j++) {
-    //         if (mealsList[j]["id"] === selectedMeals[meals[i].categoryId]) {
-    //           var savedMeal = {
-    //             centerId,
-    //             oid: parseInt(oId),
-    //             date: usedDate,
-    //             subMealId: parseInt(meals[i]["categoryId"]),
-    //             mealNameAr: mealsList[j]["titleAr"],
-    //             mealNameEn: mealsList[j]["titleEn"],
-    //             portionValue: mealsList[j]["portionValue"],
-    //             snackType: mealsList[j]["snack_typ"],
-    //             sid: parseInt(selectedCat["snackTypeId"]),
-    //             itemId: parseInt(mealsList[j]["itemId"]),
-    //             itemCode: mealsList[j]["itemCode"],
-    //             weekId: parseInt(mealsList[j]["weekId"]),
-    //             dayId: parseInt(mealsList[j]["dayId"]),
-    //             menuId: parseInt(mealsList[j]["menuId"]),
-    //             mealId: parseInt(mealsList[j]["mealId"]),
-    //           }
-
-    //           break
-    //         }
-    //       }
-    //       savedMeals.push(savedMeal)
-    //     } else {
-    //       alertMessage = alertMessage + "Select " + meals[i].titleEn + "\n"
-    //       error = true
-    //     }
-    //   }
-    // }
-
-    // if (error) {
-    //   Alert.alert(alertTitle, alertMessage)
-    // } else {
-    //   //send meals
-    //   setIsLoading(true)
-    //   axios
-    //     .post(
-    //       config.baseURL + "/api/meal/setMeals",
-    //       {
-    //         meals: savedMeals,
-    //       },
-    //       {
-    //         headers: {
-    //           Authorization: `bearer ${config.Token}`,
-    //         },
-    //       },
-    //     )
-    //     .then(response => {
-    //       setIsLoading(false)
-    //       CalendarBackHandler()
-    //     })
-    //     .catch(e => {
-    //       console.log(e)
-    //       setIsLoading(false)
-    //     })
-    // }
   }
+
+  // تجهيز الريكوست
+  for (let s = 0; s < savedMeals.length; s++) {
+    const meal = savedMeals[s]
+
+    savedMealsForRequest.push({
+      centerId,
+      oid: parseInt(oId),
+      date: usedDate,
+      subMealId: parseInt(meal.categoryId),
+      mealNameAr: meal.titleAr,
+      mealNameEn: meal.titleEn,
+      portionValue: meal.portionValue,
+      snackType: meal.snack_typ,
+      sid: parseInt(meal.snackTypeId),
+      itemId: parseInt(meal.itemId),
+      itemCode: meal.itemCode,
+      weekId: parseInt(meal.weekId),
+      dayId: parseInt(meal.dayId),
+      menuId: parseInt(meal.menuId),
+      mealId: parseInt(meal.mealId),
+    })
+  }
+
+  // console.log('--savedMealsForRequest------->>>>>>>>>>>', savedMealsForRequest);
+  
+  setIsLoading(true)
+
+  axios
+    .post(
+      config.baseURL + "/api/meal/setMeals",
+      { meals: savedMealsForRequest },
+      {
+        headers: {
+          Authorization: `bearer ${config.Token}`,
+        },
+      }
+    )
+    .then(() => {
+      setIsLoading(false)
+      CalendarBackHandler()
+    })
+    .catch(e => {
+      console.log(e)
+      setIsLoading(false)
+    })
+}
   const onFavoritePressHandle = filteredMeal => {
     const category = selectedCat
     const meal = filteredMeal
@@ -618,7 +530,8 @@ const AddMeals = ({
             const textColor =
               selectCategory?.categoryId === item?.categoryId ? colors.white : colors.black
             return (
-              <TouchableOpacity
+              <View style={{alignItems: 'center'}}>
+                <TouchableOpacity
                 key={item.mealId}
                 style={[
                   styles.mealCategoryCardStyle,
@@ -634,6 +547,9 @@ const AddMeals = ({
                   color={textColor}
                 />
               </TouchableOpacity>
+              {item?.duplicate && <Text style={{fontSize: 11, color: 'red', marginTop: -2}}>{`select ${item?.duplicate + 1} meal`}</Text>}
+              </View>
+
             )
           })}
       </View>
@@ -678,41 +594,62 @@ const AddMeals = ({
   }
 
   const mealsListSection = () => {
-    const onSelectMeal = (item: any) => {
-      setBack(true)
-      const currentCategoreas: any = categoreas
-      const currentMeals: any = mealsInCategory
-      var newMeals: any = []
-      var newCategoreas: any = []
-      for (let i = 0; i < currentMeals?.length; i++) {
-        if (item?.id == currentMeals[i]?.id) {
-          newMeals.push({ ...currentMeals[i], ...{ mealSelected: true } })
-        } else {
-          newMeals.push({ ...currentMeals[i], ...{ mealSelected: false } })
-        }
-      }
-      setMealsInCategory(newMeals)
-      for (let c = 0; c < currentCategoreas?.length; c++) {
-        if (selectCategory.categoryId == currentCategoreas[c]?.categoryId) {
-          const category: any = [{ ...selectCategory.category[0], ...{ mealListItems: newMeals } }]
-          newCategoreas.push({ ...currentCategoreas[c], ...{ category: category } })
-        } else {
-          newCategoreas.push(currentCategoreas[c])
-        }
-      }
-      setCategoreas(newCategoreas)
-      if (categortIndex + 1 < newCategoreas.length) {
-        setCategortIndex(categortIndex + 1)
-        setSelectCategory(newCategoreas[categortIndex + 1])
-        setMealsInCategory(newCategoreas[categortIndex + 1]?.category[0]?.mealListItems)
-      } else {
-        setCategortIndex(0)
-        setSelectCategory(newCategoreas[0])
-        setMealsInCategory(newCategoreas[0]?.category[0]?.mealListItems)
-      }
+    const onSelectMeal = (item) => {
+  setBack(true)
+
+  const categoryId = selectCategory.categoryId
+  const maxAllowed = (selectCategory?.duplicate || 0) + 1
+
+  let updated = { ...selectedMeals }
+
+  if (!updated[categoryId]) {
+    updated[categoryId] = []
+  }
+
+  const alreadySelected = updated[categoryId].includes(item.id)
+
+  if (alreadySelected) {
+    // remove
+    updated[categoryId] = updated[categoryId].filter(id => id !== item.id)
+  } else {
+    if (updated[categoryId].length < maxAllowed) {
+      updated[categoryId].push(item.id)
+    } else {
+      Alert.alert(`${lang[lang.lang].youCanSelectOnly}${maxAllowed} ${lang[lang.lang].onlyMeals}`)
+      return
     }
+  }
+
+  setSelectedMeals(updated)
+
+  // 🔥 هنا بقى الحل
+  const currentCount = updated[categoryId].length
+
+  if (currentCount === maxAllowed) {
+    // روح للكاتيجوري اللي بعدها
+    if (categortIndex + 1 < categoreas.length) {
+      const nextIndex = categortIndex + 1
+
+      setCategortIndex(nextIndex)
+      setSelectCategory(categoreas[nextIndex])
+      setMealsInCategory(
+        categoreas[nextIndex]?.category[0]?.mealListItems
+      )
+    } else {
+      // لو آخر كاتيجوري (اختياري)
+      setCategortIndex(0)
+      setSelectCategory(categoreas[0])
+      setMealsInCategory(
+        categoreas[0]?.category[0]?.mealListItems
+      )
+    }
+  }
+}
     const renderMealItem = ({ item, index }: { item: any; index: number }) => {
-      const select = item?.mealSelected
+      console.log('item===selectCategory====>>>>>>', selectedMeals);
+      
+      const select = selectedMeals && 
+      selectedMeals[selectCategory.categoryId]?.includes(item.id)
       const selectedItemColor = select
         ? status === 3
           ? config.color_2 + "77"
@@ -1013,7 +950,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: colors.grey,
     marginHorizontal: spacing.extraSmall,
-    marginVertical: spacing.tiny,
+    marginTop: spacing.tiny,
     paddingVertical: spacing.extraSmall,
     paddingHorizontal: spacing.medium,
     justifyContent: "center",
@@ -1053,8 +990,9 @@ const styles = StyleSheet.create({
   mainCategoryStyle: {
     flexDirection: "row",
     justifyContent: "flex-start",
-    alignItems: "center",
+    alignItems: "flex-start",
     flexWrap: "wrap",
+    height: 64,
   },
 
   countContainer: {
