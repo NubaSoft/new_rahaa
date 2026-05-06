@@ -1,10 +1,12 @@
+if (__DEV__) {
+  require('./ReactotronConfig');
+}
 import { NavigationContainer } from "@react-navigation/native"
 import { createStackNavigator } from "@react-navigation/stack"
 import React, { useEffect } from "react"
 
 import "react-native-gesture-handler"
 
-import { customFontsToLoad } from "./app/theme"
 import Authentication from "./screens/auth/Authentication"
 import LandingScreen from "./screens/auth/LandingScreen"
 import SigninScreen from "./screens/auth/SigninScreen"
@@ -28,7 +30,7 @@ import DislikeMeals from "./screens/onboarding/DislikeMeals"
 import Allergy from "./screens/onboarding/Allergy"
 import HowItWorks from "./screens/onboarding/HowItWorks"
 import Address from "./screens/onboarding/Address"
-import { Alert } from "react-native"
+import { Alert, Platform } from "react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import messaging from '@react-native-firebase/messaging';
 
@@ -43,38 +45,54 @@ export default function App() {
 //   console.log('Firebase apps:', firebase.apps);
 // }, []);
 
-  useEffect(() => {
-  const requestUserPermission = async () => {
-    const authStatus = await messaging().requestPermission();
-    const enabled = 
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-    if (enabled) {
-      const token = await messaging().getToken();
-      if (token) {
-        await AsyncStorage.setItem('fcmtoken', token);
-      }
-      console.log('FCM Token:', token);
-    } else {
-      Alert.alert('Notification Permission', 'Please enable notifications.');
+useEffect(() => {
+  const initFCM = async () => {
+    if (Platform.OS === 'ios') {
+      const authStatus = await messaging().requestPermission();
+      console.log('authStatus--------------', authStatus);
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+      console.log('enabled--------------', enabled);
+      if (!enabled) return;
     }
+    console.log('registerDeviceForRemoteMessages------------');
+    await messaging().registerDeviceForRemoteMessages();
+    console.log('✅ Registered for remote messages');
+    try {
+      const token = await messaging().getToken();
+      console.log('token--------------', token);
+      if (token) {
+          await AsyncStorage.setItem('fcmtoken', token || '');
+          console.log('FCM Token:', token);
+        }
+    } catch (e) {
+      console.log('FCM error:', e.message);
+    }
+    
   };
 
-  requestUserPermission();
+  initFCM();
 
-  // Foreground listener
-  const unsubscribe = messaging().onMessage(async remoteMessage => {
+  const unsubscribeMessage = messaging().onMessage(async remoteMessage => {
     Alert.alert(
       remoteMessage.notification?.title || 'Notification',
       remoteMessage.notification?.body || ''
     );
   });
 
-  return unsubscribe;
+  const unsubscribeToken = messaging().onTokenRefresh(async token => {
+    await AsyncStorage.setItem('fcmtoken', token);
+  });
+
+  return () => {
+    unsubscribeMessage();
+    unsubscribeToken();
+  };
 }, []);
 
 
+console.log('Hello Reactotron!');
   if (false/* !areFontsLoaded */) {
     return <Loading isLoading={true} />
   } else {

@@ -1,8 +1,8 @@
-/**
- * @format
- */
-import '@react-native-firebase/app';
-import './firebase-messaging';
+import messaging from '@react-native-firebase/messaging';
+
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  console.log('📩 Background message:', remoteMessage);
+});
 
 import { AppRegistry } from 'react-native';
 import App from './App';
